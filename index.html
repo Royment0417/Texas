@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>德州扑克比赛专用软件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: transparent;
+        }
+        
+        .navbar {
+            background-color: #007bff;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .tab-container {
+            display: flex;
+            background-color: transparent;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .tab.active {
+            color: #007bff;
+            font-weight: bold;
+            border-bottom: 3px solid #007bff;
+        }
+        
+        .content {
+            display: none;
+            padding: 20px;
+            background-color: transparent;
+            color: white;
+        }
+        
+        .content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: white;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: transparent;
+            color: white;
+        }
+        
+        .form-group input::placeholder {
+            color: #ccc;
+        }
+        
+        .blind-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .blind-container .form-group {
+            width: 48%;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            background-color: #0069d9;
+        }
+        
+        .info-card {
+            background-color: transparent;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: none;
+        }
+        
+        .info-card .label {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 5px;
+        }
+        
+        .info-card .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+            margin: 10px 0;
+        }
+        
+        #user-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        #admin.content {
+            background-color: #333333;
+        }
+        
+        /* 特殊处理用户端容器 */
+        #user.content {
+            background-color: transparent;
+        }
+        
+        .level-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .remove-level {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .add-level {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-button {
+            display: inline-block;
+            padding: 10px;
+            background-color: #6c757d;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .translation {
+            font-size: 14px;
+            color: #ccc;
+            margin-left: 10px;
+        }
+        
+        .time-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .time-input-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="user-background"></div>
+    
+    <div class="navbar" id="navbar-title">
+        德州扑克比赛专用软件
+    </div>
+    
+    <div class="tab-container">
+        <div class="tab active" data-tab="admin" id="tab-admin">管理端</div>
+        <div class="tab" data-tab="user" id="tab-user">用户端</div>
+    </div>
+    
+    <!-- 管理端 -->
+    <div id="admin" class="content active">
+        <h2 id="admin-title">管理端</h2>
+        
+        <div class="form-group">
+            <label for="language" id="language-label">语言选择</label>
+            <select id="language" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
+                <option value="zh" selected>中文</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label id="countdown-label">倒计时</label>
+            <div class="time-input-container">
+                <div class="time-input-group">
+                    <input type="number" id="countdown-minutes" value="5" min="0">
+                    <label id="minutes-label">分钟</label>
+                </div>
+                <div class="time-input-group">
+                    <input type="number" id="countdown-seconds" value="0" min="0" max="59">
+                    <label id="seconds-label">秒钟</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="currentLevel" id="current-level-label">当前级别</label>
+            <input type="number" id="currentLevel" value="1" min="1">
+        </div>
+        
+        <div class="form-group">
+            <label for="tournamentName" id="tournament-name-label">比赛名称</label>
+            <input type="text" id="tournamentName" value="德州扑克冠军赛">
+        </div>
+        
+        <div class="form-group">
+            <label for="playerCount" id="player-count-label">人数</label>
+            <input type="number" id="playerCount" value="100">
+        </div>
+        
+        <div class="form-group">
+            <label for="totalPrize" id="total-prize-label">总带入</label>
+            <input type="number" id="totalPrize" value="10000" step="0.01">
+        </div>
+        
+        <div class="form-group">
+            <label for="averagePrize" id="average-prize-label">平均带入</label>
+            <input type="number" id="averagePrize" value="100" step="0.01">
+        </div>
+        
+        <div id="levels-container">
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-1-title">级别 1</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="10" id="small-blind-1">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="20" id="big-blind-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-2-title">级别 2</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-2">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="20" id="small-blind-2">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="40" id="big-blind-2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-3-title">级别 3</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-3">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="40" id="small-blind-3">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="80" id="big-blind-3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-4-title">级别 4</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-4">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="80" id="small-blind-4">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="160" id="big-blind-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-5-title">级别 5</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-5">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="160" id="small-blind-5">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="320" id="big-blind-5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-6-title">级别 6</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-6">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="320" id="small-blind-6">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="640" id="big-blind-6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-7-title">级别 7</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-7">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="640" id="small-blind-7">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="1280" id="big-blind-7">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-8-title">级别 8</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-8">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="1280" id="small-blind-8">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="2560" id="big-blind-8">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-9-title">级别 9</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-9">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="2560" id="small-blind-9">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="5120" id="big-blind-9">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-item">
+                <div class="level-header">
+                    <h3 id="level-10-title">级别 10</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-10">盲注</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="小盲" value="5120" id="small-blind-10">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="大盲" value="10240" id="big-blind-10">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="add-level" onclick="addLevel()" id="add-level-btn">添加级别</button>
+        
+        <div class="form-group">
+            <label for="background" id="background-label">背景</label>
+            <select id="background-select" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
+                <option value="#ffffff" id="bg-white-option">默认白色</option>
+                <option value="#f8f9fa" id="bg-light-gray-option">浅灰色</option>
+                <option value="#e9ecef" id="bg-medium-gray-option">中灰色</option>
+                <option value="https://picsum.photos/1920/1080?random=1" id="bg-img-1-option">随机图片1</option>
+                <option value="https://picsum.photos/1920/1080?random=2" id="bg-img-2-option">随机图片2</option>
+                <option value="https://picsum.photos/1920/1080?random=3" id="bg-img-3-option">随机图片3</option>
+            </select>
+            
+            <div class="file-input-wrapper">
+                <div class="file-input-button" id="select-image-btn">选择本地图片</div>
+                <input type="file" id="background-upload" accept="image/*">
+            </div>
+            <input type="text" id="customBackground" placeholder="或者输入自定义图片URL" id="custom-bg-placeholder">
+        </div>
+        
+        <button class="btn" onclick="saveSettings()" id="save-settings-btn">保存设置</button>
+    </div>
+    
+    <!-- 用户端 -->
+    <div id="user" class="content">
+        <h2 id="user-title">用户端</h2>
+        
+        <div class="info-card">
+            <div class="label" id="user-countdown-label">倒计时</div>
+            <div id="user-countdown" class="timer">05:00</div>
+        </div>
+        
+        <div class="info-card">
+            <div class="label" id="user-tournament-name-label">比赛名称</div>
+            <div id="user-tournamentName" class="value">德州扑克冠军赛</div>
+        </div>
+        
+        <div class="info-card">
+            <div class="label" id="user-current-level-label">当前级别</div>
+            <div id="user-level" class="value">1</div>
+        </div>
+        
+        <div class="info-card">
+            <div class="label" id="user-player-count-label">人数</div>
+            <div id="user-playerCount" class="value">100</div>
+        </div>
+        
+        <div class="info-card">
+            <div class="label" id="user-total-prize-label">总带入</div>
+            <div id="user-totalPrize" class="value">¥10000.00</div>
+        </div>
+        
+        <div class="info-card">
+            <div class="label" id="user-average-prize-label">平均带入</div>
+            <div id="user-averagePrize" class="value">¥100.00</div>
+        </div>
+        
+        <div class="info-card">
+            <div class="label" id="user-current-blind-label">当前盲注</div>
+            <div id="user-blind" class="value">10/20</div>
+        </div>
+        
+        <div class="info-card">
+            <div class="label" id="user-next-blind-label">下一级别盲注</div>
+            <div id="user-next-blind" class="value">20/40</div>
+        </div>
+    </div>
+
+    <script>
+        // 初始数据
+        let tournamentData = {
+            countdown: 300,
+            tournamentName: "德州扑克冠军赛",
+            playerCount: 100,
+            totalPrize: 10000,
+            averagePrize: 100,
+            levels: [
+                { smallBlind: 10, bigBlind: 20 },
+                { smallBlind: 20, bigBlind: 40 },
+                { smallBlind: 40, bigBlind: 80 },
+                { smallBlind: 80, bigBlind: 160 },
+                { smallBlind: 160, bigBlind: 320 },
+                { smallBlind: 320, bigBlind: 640 },
+                { smallBlind: 640, bigBlind: 1280 },
+                { smallBlind: 1280, bigBlind: 2560 },
+                { smallBlind: 2560, bigBlind: 5120 },
+                { smallBlind: 5120, bigBlind: 10240 }
+            ],
+            currentLevel: 1,
+            background: "#ffffff"
+        };
+        
+        // 语言数据
+        const languageData = {
+            zh: {
+                navbarTitle: "德州扑克比赛专用软件",
+                adminTab: "管理端",
+                userTab: "用户端",
+                adminTitle: "管理端",
+                languageLabel: "语言选择",
+                countdownLabel: "倒计时",
+                minutesLabel: "分钟",
+                secondsLabel: "秒钟",
+                currentLevelLabel: "当前级别",
+                tournamentNameLabel: "比赛名称",
+                playerCountLabel: "人数",
+                totalPrizeLabel: "总带入",
+                averagePrizeLabel: "平均带入",
+                blindLabel: "盲注",
+                addLevelBtn: "添加级别",
+                backgroundLabel: "背景",
+                bgWhiteOption: "默认白色",
+                bgLightGrayOption: "浅灰色",
+                bgMediumGrayOption: "中灰色",
+                bgImg1Option: "随机图片1",
+                bgImg2Option: "随机图片2",
+                bgImg3Option: "随机图片3",
+                selectImageBtn: "选择本地图片",
+                customBgPlaceholder: "或者输入自定义图片URL",
+                saveSettingsBtn: "保存设置",
+                userTitle: "用户端",
+                userCountdownLabel: "倒计时",
+                userTournamentNameLabel: "比赛名称",
+                userCurrentLevelLabel: "当前级别",
+                userPlayerCountLabel: "人数",
+                userTotalPrizeLabel: "总带入",
+                userAveragePrizeLabel: "平均带入",
+                userCurrentBlindLabel: "当前盲注",
+                userNextBlindLabel: "下一级别盲注",
+                levelRequiredMsg: "至少需要保留一个级别"
+            },
+            en: {
+                navbarTitle: "Texas Hold'em Tournament Software",
+                adminTab: "Admin",
+                userTab: "User",
+                adminTitle: "Admin Panel",
+                languageLabel: "Language Selection",
+                countdownLabel: "Countdown",
+                minutesLabel: "Minutes",
+                secondsLabel: "Seconds",
+                currentLevelLabel: "Current Level",
+                tournamentNameLabel: "Tournament Name",
+                playerCountLabel: "Player Count",
+                totalPrizeLabel: "Total Buy-in",
+                averagePrizeLabel: "Average Buy-in",
+                blindLabel: "Blind",
+                addLevelBtn: "Add Level",
+                backgroundLabel: "Background",
+                bgWhiteOption: "Default White",
+                bgLightGrayOption: "Light Gray",
+                bgMediumGrayOption: "Medium Gray",
+                bgImg1Option: "Random Image 1",
+                bgImg2Option: "Random Image 2",
+                bgImg3Option: "Random Image 3",
+                selectImageBtn: "Select Local Image",
+                customBgPlaceholder: "Or enter custom image URL",
+                saveSettingsBtn: "Save Settings",
+                userTitle: "User Panel",
+                userCountdownLabel: "Countdown",
+                userTournamentNameLabel: "Tournament Name",
+                userCurrentLevelLabel: "Current Level",
+                userPlayerCountLabel: "Player Count",
+                userTotalPrizeLabel: "Total Buy-in",
+                userAveragePrizeLabel: "Average Buy-in",
+                userCurrentBlindLabel: "Current Blind",
+                userNextBlindLabel: "Next Level Blind",
+                levelRequiredMsg: "At least one level is required"
+            }
+        };
+        
+        // 当前语言
+        let currentLanguage = "zh";
+        
+        // 格式化时间显示
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // 更新界面语言
+        function updateLanguage() {
+            const lang = languageData[currentLanguage];
+            
+            // 更新导航栏
+            document.getElementById('navbar-title').textContent = lang.navbarTitle;
+            
+            // 更新标签页
+            document.getElementById('tab-admin').textContent = lang.adminTab;
+            document.getElementById('tab-user').textContent = lang.userTab;
+            
+            // 更新管理端
+            document.getElementById('admin-title').textContent = lang.adminTitle;
+            document.getElementById('language-label').textContent = lang.languageLabel;
+            document.getElementById('countdown-label').textContent = lang.countdownLabel;
+            document.getElementById('minutes-label').textContent = lang.minutesLabel;
+            document.getElementById('seconds-label').textContent = lang.secondsLabel;
+            document.getElementById('current-level-label').textContent = lang.currentLevelLabel;
+            document.getElementById('tournament-name-label').textContent = lang.tournamentNameLabel;
+            document.getElementById('player-count-label').textContent = lang.playerCountLabel;
+            document.getElementById('total-prize-label').textContent = lang.totalPrizeLabel;
+            document.getElementById('average-prize-label').textContent = lang.averagePrizeLabel;
+            
+            // 更新盲注标签
+            document.querySelectorAll('[id^="blind-label"]').forEach(el => {
+                el.textContent = lang.blindLabel;
+            });
+            
+            document.getElementById('add-level-btn').textContent = lang.addLevelBtn;
+            document.getElementById('background-label').textContent = lang.backgroundLabel;
+            document.getElementById('bg-white-option').textContent = lang.bgWhiteOption;
+            document.getElementById('bg-light-gray-option').textContent = lang.bgLightGrayOption;
+            document.getElementById('bg-medium-gray-option').textContent = lang.bgMediumGrayOption;
+            document.getElementById('bg-img-1-option').textContent = lang.bgImg1Option;
+            document.getElementById('bg-img-2-option').textContent = lang.bgImg2Option;
+            document.getElementById('bg-img-3-option').textContent = lang.bgImg3Option;
+            document.getElementById('select-image-btn').textContent = lang.selectImageBtn;
+            document.getElementById('customBackground').placeholder = lang.customBgPlaceholder;
+            document.getElementById('save-settings-btn').textContent = lang.saveSettingsBtn;
+            
+            // 更新用户端
+            document.getElementById('user-title').textContent = lang.userTitle;
+            document.getElementById('user-countdown-label').textContent = lang.userCountdownLabel;
+            document.getElementById('user-tournament-name-label').textContent = lang.userTournamentNameLabel;
+            document.getElementById('user-current-level-label').textContent = lang.userCurrentLevelLabel;
+            document.getElementById('user-player-count-label').textContent = lang.userPlayerCountLabel;
+            document.getElementById('user-total-prize-label').textContent = lang.userTotalPrizeLabel;
+            document.getElementById('user-average-prize-label').textContent = lang.userAveragePrizeLabel;
+            document.getElementById('user-current-blind-label').textContent = lang.userCurrentBlindLabel;
+            document.getElementById('user-next-blind-label').textContent = lang.userNextBlindLabel;
+            
+            // 更新级别标题
+            document.querySelectorAll('[id^="level-"][id$="-title"]').forEach(el => {
+                const levelNum = el.id.split('-')[1];
+                el.textContent = currentLanguage === 'zh' ? `级别 ${levelNum}` : `Level ${levelNum}`;
+            });
+        }
+        
+        // 更新用户端显示
+        function updateUserDisplay() {
+            document.getElementById('user-countdown').textContent = formatTime(tournamentData.countdown);
+            document.getElementById('user-tournamentName').textContent = tournamentData.tournamentName;
+            document.getElementById('user-level').textContent = tournamentData.currentLevel;
+            document.getElementById('user-playerCount').textContent = tournamentData.playerCount;
+            document.getElementById('user-totalPrize').textContent = `¥${parseFloat(tournamentData.totalPrize).toFixed(2)}`;
+            document.getElementById('user-averagePrize').textContent = `¥${parseFloat(tournamentData.averagePrize).toFixed(2)}`;
+            
+            // 显示当前级别的盲注
+            if (tournamentData.levels.length >= tournamentData.currentLevel) {
+                const currentLevelData = tournamentData.levels[tournamentData.currentLevel - 1];
+                document.getElementById('user-blind').textContent = `${currentLevelData.smallBlind}/${currentLevelData.bigBlind}`;
+            }
+            
+            // 显示下一级别的盲注
+            if (tournamentData.levels.length >= tournamentData.currentLevel + 1) {
+                const nextLevelData = tournamentData.levels[tournamentData.currentLevel];
+                document.getElementById('user-next-blind').textContent = `${nextLevelData.smallBlind}/${nextLevelData.bigBlind}`;
+            } else {
+                document.getElementById('user-next-blind').textContent = currentLanguage === 'zh' ? '无' : 'None';
+            }
+            
+            // 更新背景
+            const backgroundElement = document.getElementById('user-background');
+            if (tournamentData.background.startsWith('http') || tournamentData.background.startsWith('data:image')) {
+                // 如果是图片URL或base64数据
+                backgroundElement.style.backgroundImage = `url(${tournamentData.background})`;
+            } else {
+                // 如果是颜色值
+                backgroundElement.style.backgroundImage = 'none';
+                backgroundElement.style.backgroundColor = tournamentData.background;
+            }
+        }
+        
+        // 计算相关数值
+        function calculateRelatedValues(changedField) {
+            const playerCount = parseInt(document.getElementById('playerCount').value) || 0;
+            const totalPrize = parseFloat(document.getElementById('totalPrize').value) || 0;
+            const averagePrize = parseFloat(document.getElementById('averagePrize').value) || 0;
+            
+            if (changedField === 'playerCount') {
+                // 如果修改了人数，重新计算平均金额
+                if (playerCount > 0) {
+                    const newAverage = totalPrize / playerCount;
+                    document.getElementById('averagePrize').value = newAverage.toFixed(2);
+                }
+            } else if (changedField === 'totalPrize') {
+                // 如果修改了总金额，重新计算平均金额
+                if (playerCount > 0) {
+                    const newAverage = totalPrize / playerCount;
+                    document.getElementById('averagePrize').value = newAverage.toFixed(2);
+                }
+            } else if (changedField === 'averagePrize') {
+                // 如果修改了平均金额，重新计算总金额
+                const newTotal = averagePrize * playerCount;
+                document.getElementById('totalPrize').value = newTotal.toFixed(2);
+            }
+        }
+        
+        // 更新倒计时总秒数
+        function updateCountdownTotal() {
+            const minutes = parseInt(document.getElementById('countdown-minutes').value) || 0;
+            const seconds = parseInt(document.getElementById('countdown-seconds').value) || 0;
+            tournamentData.countdown = minutes * 60 + seconds;
+            document.getElementById('user-countdown').textContent = formatTime(tournamentData.countdown);
+        }
+        
+        // 添加级别
+        function addLevel() {
+            const levelsContainer = document.getElementById('levels-container');
+            const levelCount = document.querySelectorAll('.level-item').length + 1;
+            
+            // 获取上一级别的大盲作为这一级别的小盲
+            let smallBlind = 10;
+            let bigBlind = 20;
+            const lastLevel = document.querySelectorAll('.level-item')[levelCount - 2];
+            if (lastLevel) {
+                const lastBigBlind = lastLevel.querySelector('.big-blind');
+                if (lastBigBlind) {
+                    smallBlind = parseInt(lastBigBlind.value) || smallBlind;
+                    bigBlind = smallBlind * 2;
+                }
+            }
+            
+            const levelItem = document.createElement('div');
+            levelItem.className = 'level-item';
+            levelItem.innerHTML = `
+                <div class="level-header">
+                    <h3 id="level-${levelCount}-title">${currentLanguage === 'zh' ? '级别 ' : 'Level '}${levelCount}</h3>
+                </div>
+                <div class="form-group">
+                    <label id="blind-label-${levelCount}">${currentLanguage === 'zh' ? '盲注' : 'Blind'}</label>
+                    <div class="blind-container">
+                        <div class="form-group">
+                            <input type="number" class="small-blind" placeholder="${currentLanguage === 'zh' ? '小盲' : 'Small Blind'}" value="${smallBlind}" id="small-blind-${levelCount}">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="big-blind" placeholder="${currentLanguage === 'zh' ? '大盲' : 'Big Blind'}" value="${bigBlind}" id="big-blind-${levelCount}">
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            levelsContainer.appendChild(levelItem);
+        }
+        
+        // 删除级别
+        function removeLevel(button) {
+            const levelItem = button.closest('.level-item');
+            if (document.querySelectorAll('.level-item').length > 1) {
+                levelItem.remove();
+                // 重新编号级别
+                renumberLevels();
+                // 重新建立级别间的连接关系
+                linkBlinds();
+            } else {
+                const lang = languageData[currentLanguage];
+                alert(lang.levelRequiredMsg);
+            }
+        }
+        
+        // 重新编号级别
+        function renumberLevels() {
+            const levelItems = document.querySelectorAll('.level-item');
+            levelItems.forEach((item, index) => {
+                const header = item.querySelector('h3');
+                header.id = `level-${index + 1}-title`;
+                header.textContent = currentLanguage === 'zh' ? `级别 ${index + 1}` : `Level ${index + 1}`;
+            });
+        }
+        
+        // 建立级别间盲注的连接关系
+        function linkBlinds() {
+            const levelItems = document.querySelectorAll('.level-item');
+            for (let i = 0; i < levelItems.length - 1; i++) {
+                const currentBigBlind = levelItems[i].querySelector('.big-blind');
+                const nextSmallBlind = levelItems[i + 1].querySelector('.small-blind');
+                
+                if (currentBigBlind && nextSmallBlind) {
+                    nextSmallBlind.value = currentBigBlind.value;
+                    // 更新下一级的大盲注（保持2倍关系）
+                    const nextBigBlind = levelItems[i + 1].querySelector('.big-blind');
+                    if (nextBigBlind) {
+                        nextBigBlind.value = parseInt(nextSmallBlind.value) * 2;
+                    }
+                }
+            }
+        }
+        
+        // 盲注等比例调整
+        function adjustBlindsProportionally(changedInput) {
+            const levelItems = document.querySelectorAll('.level-item');
+            
+            // 查找发生变化的输入框属于哪个级别
+            for (let i = 0; i < levelItems.length; i++) {
+                const smallBlindInput = levelItems[i].querySelector('.small-blind');
+                const bigBlindInput = levelItems[i].querySelector('.big-blind');
+                
+                // 如果是小盲发生变化
+                if (changedInput === smallBlindInput) {
+                    // 更新当前级别大盲注（保持2倍关系）
+                    bigBlindInput.value = parseInt(smallBlindInput.value) * 2;
+                    
+                    // 更新下一级别小盲注
+                    if (i < levelItems.length - 1) {
+                        const nextSmallBlind = levelItems[i + 1].querySelector('.small-blind');
+                        nextSmallBlind.value = bigBlindInput.value;
+                        
+                        // 更新下一级别大盲注
+                        const nextBigBlind = levelItems[i + 1].querySelector('.big-blind');
+                        nextBigBlind.value = parseInt(nextSmallBlind.value) * 2;
+                    }
+                    break;
+                }
+                
+                // 如果是大盲发生变化
+                if (changedInput === bigBlindInput) {
+                    // 更新当前级别小盲注（保持一半关系）
+                    smallBlindInput.value = parseInt(bigBlindInput.value) / 2;
+                    
+                    // 更新下一级别小盲注
+                    if (i < levelItems.length - 1) {
+                        const nextSmallBlind = levelItems[i + 1].querySelector('.small-blind');
+                        nextSmallBlind.value = bigBlindInput.value;
+                        
+                        // 更新下一级别大盲注
+                        const nextBigBlind = levelItems[i + 1].querySelector('.big-blind');
+                        nextBigBlind.value = parseInt(nextSmallBlind.value) * 2;
+                    }
+                    break;
+                }
+            }
+        }
+        
+        // 读取本地图片文件
+        function readLocalImage(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tournamentData.background = e.target.result;
+                updateUserDisplay();
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 保存设置
+        function saveSettings() {
+            // 更新倒计时总秒数
+            updateCountdownTotal();
+            
+            tournamentData.currentLevel = parseInt(document.getElementById('currentLevel').value) || 1;
+            tournamentData.tournamentName = document.getElementById('tournamentName').value;
+            tournamentData.playerCount = parseInt(document.getElementById('playerCount').value) || 0;
+            tournamentData.totalPrize = parseFloat(document.getElementById('totalPrize').value) || 0;
+            tournamentData.averagePrize = parseFloat(document.getElementById('averagePrize').value) || 0;
+            
+            // 保存级别数据
+            const levelItems = document.querySelectorAll('.level-item');
+            tournamentData.levels = [];
+            levelItems.forEach(item => {
+                const smallBlind = parseInt(item.querySelector('.small-blind').value) || 0;
+                const bigBlind = parseInt(item.querySelector('.big-blind').value) || 0;
+                tournamentData.levels.push({ smallBlind, bigBlind });
+            });
+            
+            // 获取背景设置
+            const backgroundSelect = document.getElementById('background-select');
+            const customBackground = document.getElementById('customBackground').value;
+            tournamentData.background = customBackground || backgroundSelect.value;
+            
+            // 获取语言设置
+            currentLanguage = document.getElementById('language').value;
+            
+            updateUserDisplay();
+            updateLanguage();
+            
+            const lang = languageData[currentLanguage];
+            alert(currentLanguage === 'zh' ? '比赛信息已保存' : 'Tournament information saved');
+        }
+        
+        // 倒计时逻辑
+        let timerInterval;
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (tournamentData.countdown > 0) {
+                    tournamentData.countdown--;
+                    document.getElementById('user-countdown').textContent = formatTime(tournamentData.countdown);
+                } else {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserDisplay();
+            startTimer();
+            
+            // 初始化分钟和秒钟输入框的值
+            const minutes = Math.floor(tournamentData.countdown / 60);
+            const seconds = tournamentData.countdown % 60;
+            document.getElementById('countdown-minutes').value = minutes;
+            document.getElementById('countdown-seconds').value = seconds;
+            
+            // 添加事件监听器以实现实时计算
+            document.getElementById('playerCount').addEventListener('change', function() {
+                calculateRelatedValues('playerCount');
+            });
+            
+            document.getElementById('totalPrize').addEventListener('change', function() {
+                calculateRelatedValues('totalPrize');
+            });
+            
+            document.getElementById('averagePrize').addEventListener('change', function() {
+                calculateRelatedValues('averagePrize');
+            });
+            
+            // 监听倒计时分钟和秒钟输入框的变化
+            document.getElementById('countdown-minutes').addEventListener('change', updateCountdownTotal);
+            document.getElementById('countdown-seconds').addEventListener('change', updateCountdownTotal);
+            
+            // 监听本地图片上传
+            document.getElementById('background-upload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    readLocalImage(file);
+                }
+            });
+            
+            // 监听语言选择变化
+            document.getElementById('language').addEventListener('change', function() {
+                currentLanguage = this.value;
+                updateLanguage();
+            });
+            
+            // 监听盲注输入变化，实现级联调整
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('small-blind') || e.target.classList.contains('big-blind')) {
+                    adjustBlindsProportionally(e.target);
+                }
+            });
+            
+            // Tab切换
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active类
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+                    
+                    // 添加active类到当前tab和对应内容
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
